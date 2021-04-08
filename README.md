@@ -1,5 +1,5 @@
 # Project Name: Gadget Gallaxy
-**Live Site:** https://sleepy-spire-47680.herokuapp.com/
+**Live Site:** https://gadget-galaxy.web.app/
 **Server side code:** https://github.com/Porgramming-Hero-web-course/full-stack-server-nadimnil
 ### Language, library, and packages:
 - JavaScript
