@@ -9,8 +9,9 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+    res.send("hello from db, it's working");
 })
+
 const user = process.env.DB_USER;
 const password = process.env.DB_PASSWORD;
 const dbname = process.env.DB_NAME;
@@ -23,6 +24,7 @@ client.connect(err => {
   const productCollection = client.db(dbname).collection(productTbl);
   const orderCollection = client.db(dbname).collection(orderTbl);
 
+ 
     app.get('/products', (req, res) => {
         productCollection.find()
         .toArray((err, items) => {
@@ -48,9 +50,7 @@ client.connect(err => {
       })
   })
 
-  app.get('/', (req, res) => {
-      res.send("hello from db, it's working");
-  })
+  
 
   app.post('/addOrder', (req, res) => {
     const orderInformation = req.body;

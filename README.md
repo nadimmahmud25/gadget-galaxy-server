@@ -1,4 +1,4 @@
-# Project Name: Gadget Gallaxy
+# Project Name: Gadget Galaxy
 **Live Site:** https://gadget-galaxy.web.app/
 **Server side code:** https://github.com/Porgramming-Hero-web-course/full-stack-server-nadimnil
 ### Language, library, and packages:
