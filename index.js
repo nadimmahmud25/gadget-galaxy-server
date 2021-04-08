@@ -1,63 +1,80 @@
-const express = require("express");
-const app = express();
-const cors = require("cors");
-const ObjectId = require("mongodb").ObjectId;
-require("dotenv").config();
-
-
-const port = process.env.PORT || 5055;
-
+const express = require('express')
+const MongoClient = require('mongodb').MongoClient;
+const ObjectID = require('mongodb').ObjectID;
+const cors = require('cors')
+require('dotenv').config()
+const app = express()
+const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-
-const MongoClient = require('mongodb').MongoClient;
-const uri = "mongodb+srv://gadget:gadget1234@cluster0.w7kbq.mongodb.net/gadgetGallaxy?retryWrites=true&w=majority";
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+})
+const user = process.env.DB_USER;
+const password = process.env.DB_PASSWORD;
+const dbname = process.env.DB_NAME;
+const productTbl = process.env.DB_PRODUCT_TBL;
+const orderTbl = process.env.DB_ORDER_TBL;
+const uri = `mongodb+srv://${user}:${password}@cluster0.w7kbq.mongodb.net/${dbname}?retryWrites=true&w=majority`;
+//const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.gfmry.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
-  const eventCollection = client.db("gadgetGallaxy").collection("items");
-  // perform actions on the collection object
- 
+  const productCollection = client.db(dbname).collection(productTbl);
+  const orderCollection = client.db(dbname).collection(orderTbl);
 
-
-
-
-//const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.swu9d.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
-//const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-//client.connect(err => {
-  //  console.log('connection err', err)
-// const eventCollection = client.db("gadgetGallaxy").collection("items");
-  
-    app.get('/events', (req, res) => {
-        eventCollection.find()
-        .toArray((err, item) => {
-            res.send(item)
+    app.get('/products', (req, res) => {
+        productCollection.find()
+        .toArray((err, items) => {
+            res.send(items);
+            console.log('from database',items)
         })
     })
 
-    
-    app.post('/addEvent', (req, res) => {
-        const newEvent = req.body;
-        console.log('adding new event: ', newEvent)
-        eventCollection.insertOne(newEvent)
-        .then(result => {
-            console.log('inserted count', result.insertedCount);
-            res.send(result.insertedCount > 0)
-        })
-    })
-  
-
-  app.delete('deleteEvent/:id', (req, res) => {
-      const id = ObjectID(req.params.id);
-      console.log('delete this', id);
-      eventCollection.findOneAndDelete({_id: id})
-      .then(documents => res.send(!!documents.value))
+    app.get('/orders', (req, res) => {
+      orderCollection.find({email: req.query.email})
+      .toArray((err, items) => {
+          res.send(items);
+      })
   })
 
- //client.close();
+  app.post('/addProduct', (req, res) => {
+      const newProduct = req.body;
+      console.log('adding new product: ', newProduct);
+      productCollection.insertOne(newProduct)
+      .then(result => {
+          console.log('inserted count',result.insertedCount);
+          res.send(result.insertedCount > 0)
+      })
+  })
+
+  app.get('/', (req, res) => {
+      res.send("hello from db, it's working");
+  })
+
+  app.post('/addOrder', (req, res) => {
+    const orderInformation = req.body;
+    console.log('adding new product: ', orderInformation);
+    orderCollection.insertOne(orderInformation)
+    .then(result => {
+        console.log('inserted count',result.insertedCount);
+        res.send(result.insertedCount > 0)
+    })
+})
+
+app.delete('/deleteProduct/:id', (req, res) => {
+    productCollection.findOneAndDelete({_id: ObjectID (req.params.id)})
+    .then( (result) => {
+        res.send(result.deletedCount > 0);
+    })
+})
+
 });
 
 
-//app.listen(process.env.PORT || port);
+
+
 app.listen(port, () => {
-console.log(`Example app listening at http://localhost:${port}`)})
+  console.log(`Example app listening at http://localhost:${port}`)
+})
+
